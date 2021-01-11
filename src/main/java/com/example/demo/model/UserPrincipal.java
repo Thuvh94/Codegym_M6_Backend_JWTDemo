@@ -2,9 +2,13 @@ package com.example.demo.model;
 
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Data
 public class UserPrincipal implements UserDetails {
     private Long id;
@@ -13,13 +17,32 @@ public class UserPrincipal implements UserDetails {
     private String fullName;
     private Collection<? extends GrantedAuthority> roles;
 
-    public UserPrincipal(Long id, String username, String password, String fullName, Collection<? extends GrantedAuthority> roles) {
+    public UserPrincipal(Long id, String username, String password, Collection<? extends GrantedAuthority> roles) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.fullName = fullName;
         this.roles = roles;
     }
+
+    public UserPrincipal(Long id, String username, String password) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
+
+    public static UserPrincipal build(User user){
+        List<GrantedAuthority> authorities = user.getRoles().stream().map(role ->
+                new SimpleGrantedAuthority(role.getName())
+        ).collect(Collectors.toList());
+
+        return new UserPrincipal(
+                user.getId(),
+                user.getUsername(),
+                user.getPassword(),
+                authorities
+        );
+    }
+
 
     public UserPrincipal(Long id, String username, String password, String fullName) {
         this.id = id;

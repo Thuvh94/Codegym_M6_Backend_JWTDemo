@@ -1,6 +1,7 @@
 package com.example.demo.service.user;
 
 import com.example.demo.model.User;
+import com.example.demo.model.UserPrincipal;
 import com.example.demo.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,6 +41,7 @@ public class UserServiceImpl implements IUserService{
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+        User user = userRepository.findByUsername(username);
+        return UserPrincipal.build(user);
     }
 }
